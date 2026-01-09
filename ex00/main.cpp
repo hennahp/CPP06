@@ -8,6 +8,7 @@ int main(int ac, char **av)
         return 1;
     }
     std::cout << BLUE << "Converting literal: " << av[1] << RESET << std::endl;
+    std::cout << MAGENTA << "-------------------------" << RESET << std::endl;
     ScalarConverter::convert(av[1]);
     return 0;
 }
