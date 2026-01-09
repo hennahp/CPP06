@@ -1,7 +1,4 @@
 # include "ScalarConverter.hpp"
-# include <cctype>
-# include <cstdlib>
-# include <limits>
 
 ScalarConverter::ScalarConverter() {}
 ScalarConverter::ScalarConverter(const ScalarConverter &other) {(void)other;}
@@ -12,90 +9,90 @@ ScalarConverter &ScalarConverter::operator=(const ScalarConverter &other)
 }
 ScalarConverter::~ScalarConverter() {}
 
-static bool isCharLiteral(const std::string &str)
+static bool isValidLiteral(char *end)
 {
-    return (str.length() == 1 && !std::isdigit(str[0]));
+    if(*end == '\0')
+        return true;
+    if(*end == 'f' && *(end + 1) == '\0')
+        return true;
+    return false;
 }
 
-static bool isPseudoLiteral(const std::string &str)
+static void printChar(long double value)
 {
-    return (str == "nan" || str == "+inf" || 
-            str == "-inf" || str == "nanf" ||
-            str == "+inff" || str == "-inff");
+    std::cout << BOLDGREEN << "char   :" << RESET;
+    if(value < CHAR_MIN || value > CHAR_MAX || value != static_cast<int>(value))
+        std::cout <<"impossible" << std::endl;
+    else if(value < 32 || value > 126)
+        std::cout << "Non displayable" << std::endl;
+    else
+        std::cout << "'" << static_cast<char>(value) << "'" << std::endl;
 }
 
-static bool isIntLiteral(const std::string &str)
+static void printInt(long double value)
 {
-    char *endptr;
-    std::strtol(str.c_str(), &endptr, 10);
-    return (*endptr == '\0');
+    std::cout << BOLDGREEN << "int    :" << RESET;
+    if(value < INT_MIN || value > INT_MAX || std::isnan(value) || std::isinf(value))
+        std::cout << "impossible" << std::endl;
+    else
+        std::cout << static_cast<int>(value) << std::endl;
 }
 
-// static bool isFloatLiteral(const std::string &str)
-// {
-//     if(str[str.length() - 1] != 'f')
-//         return false;
-    
-//     char *endptr;
-//     std::strtof(str.c_str(), &endptr);
-//     return (*endptr == 'f' && *(endptr + 1) == '\0');
-// }
-
-// static bool isDoubleLiteral(const std::string &str)
-// {
-//     char *endptr;
-//     std::strtod(str.c_str(), &endptr);
-//     return (*endptr == '\0');
-// }
-
-static void printPseudoLiterals(const std::string &literal)
+static void printFloat(long double value)
 {
-   std::cout << "char   :impossible" << std::endl;
-   std::cout << "int    :impossible" << std::endl;
+    std::cout << BOLDGREEN << "float  :" << RESET;
+    if((value < -std::numeric_limits<float>::max() || 
+        value > std::numeric_limits<float>::max()) && 
+        !std::isinf(value))
+    {
+        std::cout << "impossible" << std::endl;
+        return;
+    }
+    float fvalue = static_cast<float>(value);
+    std::cout << fvalue;
+    if(fvalue == static_cast<int>(fvalue))
+        std::cout << ".0";
+    std::cout << "f" << std::endl;
+}
 
-   if(literal == "nan" || literal == "+inf" || literal == "-inf")
-   {
-    std::cout << "float  :" << literal << "f" << std::endl;
-    std::cout << "double :" << literal << std::endl;
-   }
-   else
-   {
-    std::cout << "float  :" << literal << std::endl;
-    std::cout << "double :" << literal.substr(0, literal.length() - 1) << std::endl;
-   }
+static void printDouble(long double value)
+{
+    std::cout << BOLDGREEN << "double :" << RESET;
+    if ((value < -std::numeric_limits<double>::max() ||
+        value > std::numeric_limits<double>::max()) &&
+        !std::isinf(value))
+    {
+        std::cout << "impossible" << std::endl;
+        return;
+    }
+    double dvalue = static_cast<double>(value);
+    std::cout << dvalue;
+    if(dvalue == static_cast<int>(dvalue))
+        std::cout << ".0";
+    std::cout << std::endl;
 }
 
 void ScalarConverter::convert(const std::string &literal)
 {
-    if(isCharLiteral(literal))
+    if(literal.length() == 1 && !std::isdigit(literal[0]))
     {
         char c = literal[0];
-        std::cout << "char   :'" << c << "'" << std::endl;
-        std::cout << "int    :" << static_cast<int>(c) << std::endl;
-        std::cout << "float  :" << static_cast<float>(c) << "f" << std::endl;
-        std::cout << "double :" << static_cast<double>(c) << std::endl;
+        printChar(c);
+        printInt(c);
+        printFloat(c);
+        printDouble(c);
         return;
     }
-    if(isIntLiteral(literal))
+
+    char *endptr;
+    long double value = std::strtold(literal.c_str(), &endptr);
+    if(!isValidLiteral(endptr))
     {
-        long value = std::strtol(literal.c_str(), NULL, 10);
-        if(value < 0 || value > 127)
-            std::cout << "char   :impossible" << std::endl;
-        else if(!std::isprint(static_cast<char>(value)))
-            std::cout << "char   :Non displayable" << std::endl;
-        else
-            std::cout << "char   :'" << static_cast<char>(value) << "'" << std::endl;
-        if(value < std::numeric_limits<int>::min() || value > std::numeric_limits<int>::max())
-            std::cout << "int    :impossible" << std::endl;
-        else
-            std::cout << "int    :" << static_cast<int>(value) << std::endl;
-        std::cout << "float  :" << static_cast<float>(value) << ".0f" << std::endl;
-        std::cout << "double :" << static_cast<double>(value) << ".0" << std::endl;
+        std::cerr << RED << "Error: Invalid literal value." << RESET << std::endl;
         return;
     }
-    if(isPseudoLiteral(literal))
-    {
-        printPseudoLiterals(literal);
-        return;
-    }
+    printChar(value);
+    printInt(value);
+    printFloat(value);
+    printDouble(value);
 }
