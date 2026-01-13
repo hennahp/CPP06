@@ -9,7 +9,10 @@
 #define MAGENTA "\033[35m"
 #define CYAN    "\033[36m"
 
-#include <cstdint>
+#include <stdint.h>
+#include <iostream>
+#include <string>
+#include "Data.hpp"
 
 class Serializer
 {
