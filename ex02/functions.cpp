@@ -35,15 +35,15 @@ void identify(Base* p)
 
 void identify(Base& p)
 {
-    try{dynamic_cast<A&>(p); 
+    try{(void)dynamic_cast<A&>(p); 
         std::cout << CYAN <<"Identified type: A" << RESET << std::endl; 
         return;}
     catch(...){}
-    try{dynamic_cast<B&>(p); 
+    try{(void)dynamic_cast<B&>(p); 
         std::cout << CYAN <<"Identified type: B" << RESET << std::endl; 
         return;}
     catch(...){}
-    try{dynamic_cast<C&>(p);
+    try{(void)dynamic_cast<C&>(p);
         std::cout << CYAN <<"Identified type: C" << RESET << std::endl; 
         return;}
     catch(...){}

@@ -17,8 +17,6 @@ int main()
     identify(*ptr);
     std::cout << GREEN <<"Identifying nullptr using pointer:" << RESET << std::endl;
     identify(invalid);
-    std::cout << GREEN <<"Identifying nullptr using reference:" << RESET << std::endl;
-    identify(*invalid);
     delete ptr;
 
     return 0;
