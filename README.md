@@ -36,6 +36,12 @@ Understanding when and why to use each cast is crucial for writing safe, efficie
 ## ex00: Scalar Converter
 Implements a static class `ScalarConverter` that converts a string literal to its corresponding scalar types (char, int, float, double). Handles edge cases and displays conversion results.
 
+---
+**Note:**
+There is a little mistake in my implementation, I am supposed to identify the type first and then convert to other types, but here I am doing that only in case of char, for the rest of the numeric cases I am converting directly to long double using strtold and then converting to other types without explicitly checking if its int or float or double.
+
+---
+
 **Usage:**
 ```sh
 cd ex00
